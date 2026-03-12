@@ -1,0 +1,160 @@
+# Explainable Fraud Detection System
+
+> An end-to-end machine learning pipeline for detecting financial fraud on 
+> highly imbalanced transactional data — with SHAP-powered explainability 
+> that generates human-readable case reports for audit and compliance review.
+
+---
+
+## The Problem
+
+Fraud in transactional data is rare by nature — typically less than 1% of 
+all transactions. This extreme class imbalance means standard ML models 
+trained on accuracy will simply predict "not fraud" for everything and still 
+score 99%+. That's not a model — it's a liability.
+
+This project addresses that core challenge by:
+- Reframing the evaluation around **Precision, Recall, F1, and PR-AUC** 
+  rather than accuracy
+- Using **threshold-based decisioning** to deliberately tune the tradeoff 
+  between catching fraud and minimizing false positives
+- Making every model decision **explainable** at both the global and 
+  individual transaction level using SHAP
+
+---
+
+## What This System Does
+
+1. **Explores** the dataset — class distribution, feature correlations, 
+   missing values, and anomaly patterns
+2. **Trains and evaluates** classification models on imbalanced data
+3. **Applies SHAP** to explain which features drive each prediction — 
+   globally across all transactions, and locally for any individual case
+4. **Generates automated case reports** — readable markdown files that 
+   explain exactly why a transaction was flagged or cleared, built for 
+   audit trails and compliance review
+
+---
+
+## Sample Output — What a Case Report Looks Like
+
+The system produces decision reports like this for every transaction:
+```
+Case 1146 — Decision: FRAUD  
+Predicted fraud probability: 1.0000 (threshold = 0.20)
+
+Key drivers pushing toward FRAUD:
+  • V8  (value = -37.35) → contributed +18.04 (↑ fraud risk)
+  • V14 (value =  -9.07) → contributed +14.42 (↑ fraud risk)
+  • V7  (value = -18.75) → contributed +12.44 (↑ fraud risk)
+
+Key drivers pushing toward NON-FRAUD:
+  • V1  (value = -13.19) → contributed -11.31 (↓ fraud risk)
+  • V22 (value =  -8.89) → contributed  -7.33 (↓ fraud risk)
+```
+
+See [`outputs/fraud_case_report.md`](outputs/fraud_case_report.md) and 
+[`outputs/nonfraud_case_report.md`](outputs/nonfraud_case_report.md) 
+for full examples.
+
+---
+
+## Technical Stack
+
+| Category | Tools |
+|----------|-------|
+| Language | Python 3 |
+| Data Manipulation | pandas, NumPy |
+| Modeling | scikit-learn (Logistic Regression, Random Forest), XGBoost |
+| Imbalanced Data | class_weight, SMOTE (imbalanced-learn) |
+| Explainability | SHAP (global + local) |
+| Evaluation | Precision, Recall, F1-score, PR-AUC |
+| Visualization | matplotlib, seaborn |
+| Environment | Jupyter Notebook |
+
+---
+
+## Project Structure
+```
+Explainable-Fraud-Detection/
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb      # EDA, class imbalance analysis, 
+│   │                                  # feature distributions
+│   └── 02_modeling_and_shap.ipynb     # Model training, threshold tuning,
+│                                      # SHAP global + local explainability
+│
+├── outputs/
+│   ├── fraud_case_report.md           # Sample SHAP report — flagged 
+│   │                                  # transaction (Case 1146)
+│   └── nonfraud_case_report.md        # Sample SHAP report — cleared 
+│                                      # transaction
+│
+└── .gitignore
+```
+
+---
+
+## Key Design Decisions
+
+**Why PR-AUC instead of ROC-AUC?**  
+ROC-AUC is misleading on imbalanced datasets because it factors in true 
+negatives, which are abundant in fraud data. PR-AUC focuses only on the 
+minority class (actual fraud), making it a far more honest performance 
+metric for this problem.
+
+**Why threshold = 0.20?**  
+The default 0.50 classification threshold is designed for balanced classes. 
+Lowering it to 0.20 deliberately increases recall — catching more real fraud 
+cases — at the cost of some additional false positives. This tradeoff is 
+intentional and mirrors how real fraud operations are run, where missing 
+fraud is far more costly than reviewing a false positive.
+
+**Why SHAP over feature importance?**  
+Built-in feature importance tells you which features matter on average 
+across all predictions. SHAP tells you exactly how much each feature 
+contributed to *this specific transaction's* score — positive or negative. 
+That per-transaction accountability is what makes the system auditable.
+
+---
+
+## How to Run
+```bash
+# Clone the repo
+git clone https://github.com/SanjayKajeepeta/Explainable-Fraud-Detection.git
+cd Explainable-Fraud-Detection
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Launch notebooks
+jupyter notebook notebooks/01_data_exploration.ipynb
+```
+
+**Dataset:** This project uses the 
+[Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) 
+from Kaggle (ULB Machine Learning Group). Download `creditcard.csv` and 
+place it in a `data/` folder before running.
+
+---
+
+## Skills Demonstrated
+
+`Python` · `scikit-learn` · `XGBoost` · `SHAP` · `pandas` · `NumPy` · 
+`Imbalanced data handling` · `Threshold-based decisioning` · 
+`Explainable AI` · `Audit-ready reporting` · `Jupyter`
+
+---
+
+## About
+
+Built as part of a portfolio focused on **fraud detection, risk analytics, 
+and explainable machine learning** — areas developed through academic 
+work at Saint Louis University (MS Information Systems, 2025) and 
+professional experience in service quality and risk compliance at Uber.
+
+**Author:** Sanjay Kajeepeta  
+**LinkedIn:** [linkedin.com/in/sanjaykajeepeta](https://www.linkedin.com/in/sanjaykajeepeta/)
+```
+
+---
